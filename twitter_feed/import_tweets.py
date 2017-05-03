@@ -27,13 +27,18 @@ class ImportTweets:
         api = tweepy.API(auth)
 
         return api.user_timeline()
-
+    
+    def _give_timezone(self, time):
+        local_tz = pytz.timezone(settings.TIME_ZONE)
+        local_tz.localize(time)
+        return local_tz
+    
     def _tweepy_status_to_tweet(self, status):
         """
         Fields documentation: https://dev.twitter.com/docs/api/1.1/get/statuses/home_timeline
         """
         tweet = Tweet()
-        tweet.published_at = status.created_at
+        tweet.published_at = self._give_timezone(status.created_at)
         tweet.content = status.text
 
         return tweet
